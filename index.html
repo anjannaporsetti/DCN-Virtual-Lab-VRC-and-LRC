@@ -1,0 +1,596 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DCN Virtual Lab | PTU</title>
+
+    <!-- External CSS file -->
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+
+<body>
+
+    <!-- Website Header -->
+    <header class="site-header">
+        <div class="header-content">
+
+            <img
+                src="ptu-logo.png"
+                alt="PTU Logo"
+                class="ptu-logo"
+            >
+
+            <div class="header-text">
+                <h2>PUDUCHERRY TECHNOLOGICAL UNIVERSITY</h2>
+                <p>Department of Electronics and Communication Engineering</p>
+                <h1>Data Communication Networks Virtual Lab</h1>
+                <p class="header-subtitle">
+                    Error Detection Using VRC and LRC
+                </p>
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- Navigation Tabs -->
+    <nav class="main-nav" aria-label="Virtual lab navigation">
+
+        <button class="nav-btn active"
+                data-section="aim"
+                onclick="showSection('aim', this)">
+            Aim
+        </button>
+
+        <button class="nav-btn"
+                data-section="theory"
+                onclick="showSection('theory', this)">
+            Theory
+        </button>
+
+        <button class="nav-btn"
+                data-section="procedure"
+                onclick="showSection('procedure', this)">
+            Procedure
+        </button>
+
+        <button class="nav-btn"
+                data-section="pretest"
+                onclick="showSection('pretest', this)">
+            Pre-Test
+        </button>
+
+        <button class="nav-btn"
+                data-section="vrc"
+                onclick="showSection('vrc', this)">
+            Simulation 1 — VRC
+        </button>
+
+        <button class="nav-btn"
+                data-section="lrc"
+                onclick="showSection('lrc', this)">
+            Simulation 2 — LRC
+        </button>
+
+        <button class="nav-btn"
+                data-section="posttest"
+                onclick="showSection('posttest', this)">
+            Post-Test
+        </button>
+
+        <button class="nav-btn"
+                data-section="result"
+                onclick="showSection('result', this)">
+            Result
+        </button>
+
+    </nav>
+
+
+    <!-- Main Content -->
+    <main class="main-container">
+
+
+        <!-- 1. AIM -->
+        <section id="aim" class="lab-section active-section">
+
+            <div class="section-heading">
+                <span class="section-number">01</span>
+                <div>
+                    <h2>Aim</h2>
+                    <p>Objective of the experiment</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h3>Experiment Aim</h3>
+
+                <p>
+                    To study and simulate error detection techniques used
+                    in the Data Link Layer of Digital communication networks using
+                    Vertical Redundancy Check (VRC) and Longitudinal
+                    Redundancy Check (LRC).
+                </p>
+
+                <h3>Learning Objectives</h3>
+
+                <ul>
+                    <li>Understand the concept of parity-based error detection.</li>
+                    <li>Generate parity bits using VRC.</li>
+                    <li>Generate column parity using LRC.</li>
+                    <li>Observe how parity checks detect transmission errors.</li>
+                    <li>Compare the working of VRC and LRC.</li>
+                </ul>
+            </div>
+
+        </section>
+
+
+        <!-- 2. THEORY -->
+        <section id="theory" class="lab-section">
+
+            <div class="section-heading">
+                <span class="section-number">02</span>
+                <div>
+                    <h2>Theory</h2>
+                    <p>Concepts behind error detection</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+
+                <h3>1. Error Detection</h3>
+
+                <p>
+                    During data transmission, bits may change because of
+                    noise or interference in the communication channel.
+                    Error detection techniques add redundant bits to the
+                    original data so that the receiver can check whether
+                    the received data may contain errors.
+                </p>
+
+                <h3>2. Vertical Redundancy Check (VRC)</h3>
+
+                <p>
+                    VRC is a one-dimensional parity technique. A parity
+                    bit is added to a data unit so that the total number
+                    of 1s follows the selected parity rule.
+                </p>
+
+                <ul>
+                    <li>
+                        <strong>Even parity:</strong>
+                        The total number of 1s, including the parity bit,
+                        must be even.
+                    </li>
+                    <li>
+                        <strong>Odd parity:</strong>
+                        The total number of 1s, including the parity bit,
+                        must be odd.
+                    </li>
+                </ul>
+
+                <p>
+                    The receiver checks the parity of the received bits.
+                    A parity mismatch indicates a possible transmission
+                    error. VRC may fail to detect errors when an even
+                    number of bits change.
+                </p>
+
+                <h3>3. Longitudinal Redundancy Check (LRC)</h3>
+
+                <p>
+                    LRC arranges data bits into rows and calculates parity
+                    for corresponding columns. The calculated column
+                    parity bits form an additional parity row.
+                </p>
+
+                <p>
+                    In this simulation, LRC demonstrates column parity.
+                    A mismatch between the calculated and received column
+                    parity indicates a possible error. Column parity alone
+                    does not identify every error position.
+                </p>
+
+                <h3>4. Difference Between VRC and LRC</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>VRC</th>
+                                <th>LRC</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Method</td>
+                                <td>Parity for one data unit</td>
+                                <td>Parity across columns of data</td>
+                            </tr>
+                            <tr>
+                                <td>Organization</td>
+                                <td>One-dimensional</td>
+                                <td>Two-dimensional data arrangement</td>
+                            </tr>
+                            <tr>
+                                <td>Redundancy</td>
+                                <td>One parity bit per data unit</td>
+                                <td>One parity bit per column</td>
+                            </tr>
+                            <tr>
+                                <td>Limitation</td>
+                                <td>May miss even-numbered bit errors</td>
+                                <td>Column parity alone has limitations</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 3. PROCEDURE -->
+        <section id="procedure" class="lab-section">
+
+            <div class="section-heading">
+                <span class="section-number">03</span>
+                <div>
+                    <h2>Procedure</h2>
+                    <p>Steps to perform the experiment</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+
+                <h3>Part A: VRC Simulation</h3>
+
+                <ol>
+                    <li>Open the VRC simulation tab.</li>
+                    <li>Enter a binary data sequence containing only 0s and 1s.</li>
+                    <li>Select even parity or odd parity.</li>
+                    <li>Generate the parity bit and transmitted frame.</li>
+                    <li>Optionally flip a bit to simulate a transmission error.</li>
+                    <li>Observe the parity check result.</li>
+                </ol>
+
+                <h3>Part B: LRC Simulation</h3>
+
+                <ol>
+                    <li>Open the LRC simulation tab.</li>
+                    <li>Enter binary data of equal length in each row.</li>
+                    <li>Generate the column parity bits.</li>
+                    <li>Observe the generated LRC parity row.</li>
+                    <li>Optionally flip a data bit or parity bit.</li>
+                    <li>Observe whether the column parity check detects a mismatch.</li>
+                </ol>
+
+                <h3>Part C: Assessment</h3>
+
+                <ol>
+                    <li>Answer the Pre-Test questions.</li>
+                    <li>Perform both simulations.</li>
+                    <li>Answer the Post-Test questions.</li>
+                    <li>Open the Result tab to review the experiment.</li>
+                </ol>
+
+            </div>
+
+        </section>
+
+
+        <!-- 4. PRE-TEST -->
+        <section id="pretest" class="lab-section">
+
+            <div class="section-heading">
+                <span class="section-number">04</span>
+                <div>
+                    <h2>Pre-Test</h2>
+                    <p>Test your basic understanding before the simulation</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+
+                <div id="preQuiz" class="quiz-container">
+                    <!-- Questions are generated by script.js -->
+                </div>
+
+                <button type="button"
+                        class="primary-btn"
+                        onclick="gradeQuiz('pre')">
+                    Submit Pre-Test
+                </button>
+
+                <div id="preQuizResult"
+                     class="quiz-result"
+                     aria-live="polite">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 5. VRC SIMULATION -->
+        <section id="vrc" class="lab-section">
+
+            <div class="section-heading">
+                <span class="section-number">05</span>
+                <div>
+                    <h2>Simulation 1 — VRC</h2>
+                    <p>Vertical Redundancy Check</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+
+                <h3>Enter Data</h3>
+
+                <p>
+                    Enter a binary sequence and select the parity type
+                    to generate the transmitted frame.
+                </p>
+
+                <div class="form-group">
+                    <label for="vrcData">Binary Data</label>
+
+                    <input
+                        type="text"
+                        id="vrcData"
+                        placeholder="Ex. 10011010"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="vrcParity">Parity Type</label>
+
+                    <select id="vrcParity">
+                        <option value="even">Even Parity</option>
+                        <option value="odd">Odd Parity</option>
+                    </select>
+                </div>
+
+                <button type="button"
+                        id="vrcGenerateBtn"
+                        class="primary-btn"
+                        onclick="generateVRC()">
+                    Generate VRC
+                </button>
+
+                <div id="vrcOutput"
+                     class="simulation-output"
+                     aria-live="polite">
+                    <p>Your generated frame will appear here.</p>
+                </div>
+
+                <hr>
+
+                <h3>Test Error Detection</h3>
+
+                <p>
+                    After generating the frame, select a bit position
+                    and flip that bit to simulate a transmission error.
+                </p>
+
+                <div class="form-group">
+                    <label for="vrcTestBit">Bit Position to Flip</label>
+
+                    <input
+                        type="number"
+                        id="vrcTestBit"
+                        min="1"
+                        placeholder="Ex. 2"
+                    >
+                </div>
+
+                <p class="helper-text">
+                    Enter a 1-based position from the left of the original
+                    data bits only. The added parity bit is not selectable.
+                </p>
+
+                <button type="button"
+                        id="vrcFlipBtn"
+                        class="secondary-btn"
+                        onclick="flipVRCBit()">
+                    Flip Bit and Check
+                </button>
+
+                <div id="vrcErrorOutput"
+                     class="simulation-output"
+                     aria-live="polite">
+                    <p>The error detection result will appear here.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 6. LRC SIMULATION -->
+        <section id="lrc" class="lab-section">
+
+            <div class="section-heading">
+                <span class="section-number">06</span>
+                <div>
+                    <h2>Simulation 2 — LRC</h2>
+                    <p>Longitudinal Redundancy Check</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+
+                <h3>Enter Data Rows</h3>
+
+                <p>
+                    Enter binary data in the four rows. All rows must
+                    contain the same number of bits.
+                </p>
+
+                <div class="form-group">
+                    <label for="lrcRow1">Data Row 1</label>
+                    <input type="text"
+                           id="lrcRow1"
+                           placeholder="Ex. 1001"
+                           autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="lrcRow2">Data Row 2</label>
+                    <input type="text"
+                           id="lrcRow2"
+                           placeholder="Ex. 1100"
+                           autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="lrcRow3">Data Row 3</label>
+                    <input type="text"
+                           id="lrcRow3"
+                           placeholder="Ex. 1010"
+                           autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="lrcRow4">Data Row 4</label>
+                    <input type="text"
+                           id="lrcRow4"
+                           placeholder="Ex. 0110"
+                           autocomplete="off">
+                </div>
+
+                <button type="button"
+                        id="lrcGenerateBtn"
+                        class="primary-btn"
+                        onclick="generateLRC()">
+                    Generate LRC
+                </button>
+
+                <div id="lrcOutput"
+                     class="simulation-output"
+                     aria-live="polite">
+                    <p>Your 2D parity matrix will appear here.</p>
+                </div>
+
+                <hr>
+
+                
+
+                <div id="lrcErrorOutput"
+                     class="simulation-output"
+                     aria-live="polite">
+                    <p>Generate the LRC matrix to begin error detection.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 7. POST-TEST -->
+        <section id="posttest" class="lab-section">
+
+            <div class="section-heading">
+                <span class="section-number">07</span>
+                <div>
+                    <h2>Post-Test</h2>
+                    <p>Evaluate what you learned</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+
+                <div id="postQuiz" class="quiz-container">
+                    <!-- Questions are generated by script.js -->
+                </div>
+
+                <button type="button"
+                        class="primary-btn"
+                        onclick="gradeQuiz('post')">
+                    Submit Post-Test
+                </button>
+
+                <div id="postQuizResult"
+                     class="quiz-result"
+                     aria-live="polite">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 8. RESULT -->
+        <section id="result" class="lab-section">
+
+            <div class="section-heading">
+                <span class="section-number">08</span>
+                <div>
+                    <h2>Result</h2>
+                    <p>Experiment summary</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+
+                <h3>Expected Outcome</h3>
+
+                <p>
+                    The VRC simulation demonstrates how a parity bit is
+                    generated and checked for a binary data sequence.
+                    The LRC simulation demonstrates how column parity
+                    bits are calculated and checked across multiple rows.
+                </p>
+
+                <h3>Conclusion</h3>
+
+                <p>
+                    Thus, the VRC and LRC error detection techniques
+                    are studied and simulated. The simulations demonstrate
+                    how parity mismatches can indicate possible errors
+                    during data transmission.
+                </p>
+
+                <div class="result-actions">
+                    <button type="button"
+                            class="secondary-btn"
+                            onclick="showSection('vrc')">
+                        Repeat VRC Simulation
+                    </button>
+
+                    <button type="button"
+                            class="secondary-btn"
+                            onclick="showSection('lrc')">
+                        Repeat LRC Simulation
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>Data Communication Networks Virtual Lab</p>
+        <p>Electronics and Communication Engineering</p>
+    </footer>
+
+
+    <!-- External JavaScript file -->
+    <script src="script.js"></script>
+
+</body>
+</html>
