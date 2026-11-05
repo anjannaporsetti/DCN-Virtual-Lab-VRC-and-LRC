@@ -1,4 +1,3 @@
-
 /* =========================================
    DCN VIRTUAL LAB - STYLE.CSS
    Navy blue + cyan theme
@@ -10,7 +9,6 @@
     --blue: #2463a6;
     --cyan: #18b6c9;
     --cyan-light: #e7f9fc;
-    --purple: #7157c8;
     --background: #f3f7fc;
     --white: #ffffff;
     --text: #243247;
@@ -481,33 +479,6 @@ button:focus-visible {
     margin-top: 12px;
 }
 
-.output-matrix {
-    display: grid;
-    gap: 7px;
-    margin: 15px 0;
-    overflow-x: auto;
-}
-
-.matrix-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-width: max-content;
-}
-
-.matrix-label {
-    width: 95px;
-    flex-shrink: 0;
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 650;
-}
-
-.parity-label {
-    color: #087b8a;
-    font-weight: 750;
-}
-
 /* =========================================
    QUIZZES
    ========================================= */
@@ -597,6 +568,7 @@ button:focus-visible {
    ========================================= */
 
 @media (max-width: 800px) {
+
     .main-nav {
         justify-content: flex-start;
         flex-wrap: nowrap;
@@ -632,6 +604,7 @@ button:focus-visible {
 }
 
 @media (max-width: 520px) {
+
     .site-header {
         padding: 20px 13px;
     }
@@ -694,7 +667,9 @@ button:focus-visible {
     }
 }
 
-/* 2D LRC Matrix Styling */
+/* =========================================
+   2D LRC MATRIX
+   ========================================= */
 
 .lrc-matrix {
     width: auto;
@@ -728,8 +703,9 @@ button:focus-visible {
     color: #087b8a;
 }
 
-
-/* Interactive 2D LRC data bits */
+/* =========================================
+   INTERACTIVE LRC DATA BITS
+   ========================================= */
 
 .lrc-bit {
     display: inline-flex;
@@ -749,19 +725,6 @@ button:focus-visible {
                 border-color 0.2s ease,
                 transform 0.2s ease;
 }
-/* Highlight flipped LRC data bits in red */
-
-.lrc-bit.error-bit {
-    background: #ffe1e4;
-    color: #c62828;
-    border: 2px solid #e53945;
-    font-weight: 800;
-}
-
-.lrc-bit.error-bit:hover {
-    background: #ffcdd2;
-    border-color: #c62828;
-}
 
 .lrc-bit:hover {
     background: var(--cyan-light);
@@ -777,6 +740,34 @@ button:focus-visible {
     outline: 3px solid rgba(24, 182, 201, 0.45);
     outline-offset: 2px;
 }
+
+/* Highlight flipped LRC data bits */
+
+.lrc-bit.error-bit {
+    background: #ffe1e4;
+    color: #c62828;
+    border: 2px solid #e53945;
+    font-weight: 800;
+}
+
+.lrc-bit.error-bit:hover {
+    background: #ffcdd2;
+    border-color: #c62828;
+}
+
+/* Highlight changed LRC parity bits */
+
+.lrc-matrix .bit.parity-bit.parity-error {
+    background: #ffe1e4;
+    color: #c62828;
+    border: 2px solid #e53945;
+    font-weight: 800;
+}
+
+/* =========================================
+   LRC ERROR AND SUCCESS MESSAGES
+   ========================================= */
+
 .error-result {
     background: #fff0f1;
     color: #c62828;
@@ -795,33 +786,52 @@ button:focus-visible {
     padding: 15px;
     border-radius: 8px;
 }
-/* Flipped data bits */
-.lrc-bit.error-bit {
+
+/* =========================================
+   INTERACTIVE VRC BITS
+   ========================================= */
+
+.vrc-bit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 52px;
+    border: 1px solid #cbdcf0;
+    border-radius: 11px;
+    background: #ffffff;
+    color: var(--navy);
+    font-family: Consolas, monospace;
+    font-size: 19px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease;
+}
+
+.vrc-bit:hover {
+    background: var(--cyan-light);
+    transform: translateY(-2px);
+}
+
+/* Highlight the VRC parity bit */
+
+.vrc-bit.parity-bit {
+    background: #dff8f8;
+    border-color: #8ddfe3;
+    color: #087b8a;
+}
+
+/* Highlight flipped VRC bits */
+
+.vrc-bit.error-bit {
     background: #ffe1e4;
     color: #c62828;
     border: 2px solid #e53945;
     font-weight: 800;
 }
 
-/* Recalculated parity bits that differ from original parity */
-.parity-bit.parity-error {
-    background: #ffe1e4;
-    color: #c62828;
-    border: 2px solid #e53945;
-    font-weight: 800;
-}
-/* Flipped data bits */
-.lrc-matrix .lrc-bit.error-bit {
-    background: #ffe1e4 !important;
-    color: #c62828 !important;
-    border: 2px solid #e53945 !important;
-    font-weight: 800;
-}
-
-/* Recalculated parity differs from original */
-.lrc-matrix .bit.parity-bit.parity-error {
-    background: #ffe1e4 !important;
-    color: #c62828 !important;
-    border: 2px solid #e53945 !important;
-    font-weight: 800;
+.vrc-bit.error-bit:hover {
+    background: #ffcdd2;
 }

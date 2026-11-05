@@ -373,44 +373,6 @@
                     <p>Your generated frame will appear here.</p>
                 </div>
 
-                <hr>
-
-                <h3>Test Error Detection</h3>
-
-                <p>
-                    After generating the frame, select a bit position
-                    and flip that bit to simulate a transmission error.
-                </p>
-
-                <div class="form-group">
-                    <label for="vrcTestBit">Bit Position to Flip</label>
-
-                    <input
-                        type="number"
-                        id="vrcTestBit"
-                        min="1"
-                        placeholder="Ex. 2"
-                    >
-                </div>
-
-                <p class="helper-text">
-                    Enter a 1-based position from the left of the original
-                    data bits only. The added parity bit is not selectable.
-                </p>
-
-                <button type="button"
-                        id="vrcFlipBtn"
-                        class="secondary-btn"
-                        onclick="flipVRCBit()">
-                    Flip Bit and Check
-                </button>
-
-                <div id="vrcErrorOutput"
-                     class="simulation-output"
-                     aria-live="polite">
-                    <p>The error detection result will appear here.</p>
-                </div>
-
             </div>
 
         </section>

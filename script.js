@@ -1,4 +1,3 @@
-
 /* =========================================
    DCN VIRTUAL LAB - SCRIPT.JS
    Tabs + VRC + 2D LRC + Quizzes
@@ -87,18 +86,22 @@ function renderBits(value, parityPosition = -1) {
 
 
 /* =========================================
-   3. VRC SIMULATION
+   3. INTERACTIVE VRC SIMULATION
    ========================================= */
 
 let vrcState = {
-    originalData: "",
+    originalFrame: "",
     frame: "",
     parityType: "even",
+    changedPositions: [],
+    manualParityChanged: false,
     generated: false
 };
 
 
+// Generate VRC frame
 function generateVRC() {
+
     const data = getElement("vrcData").value.trim();
     const parityType = getElement("vrcParity").value;
 
@@ -125,115 +128,155 @@ function generateVRC() {
     let parityBit;
 
     if (parityType === "even") {
-        parityBit = ones % 2;
+        parityBit = String(ones % 2);
     } else {
-        parityBit = ones % 2 === 0 ? 1 : 0;
+        parityBit = ones % 2 === 0 ? "1" : "0";
     }
 
     const frame = data + parityBit;
 
     vrcState = {
-        originalData: data,
+        originalFrame: frame,
         frame: frame,
         parityType: parityType,
+        changedPositions: [],
+        manualParityChanged: false,
         generated: true
     };
 
-    getElement("vrcTestBit").value = "";
+    renderVRCOutput();
+}
+
+
+// Display VRC frame and error detection together
+function renderVRCOutput() {
 
     getElement("vrcOutput").innerHTML = `
-        <p class="output-title">VRC Generation Result</p>
+        <p class="output-title">VRC Error Detection</p>
 
-        <p><strong>Original data:</strong> ${data}</p>
+        <p><strong>Transmitted Frame:</strong></p>
 
-        <p><strong>Number of 1s:</strong> ${ones}</p>
+        <p>Click any bit to toggle it.</p>
 
-        <p><strong>Parity type:</strong>
-            ${parityType === "even" ? "Even parity" : "Odd parity"}
+        ${renderVRCFrame()}
+
+        <p class="helper-text">
+            The last bit is the parity bit.
         </p>
 
-        <p><strong>Generated parity bit:</strong> ${parityBit}</p>
-
-        <p><strong>Transmitted frame:</strong></p>
-
-        ${renderBits(frame, frame.length - 1)}
-
-        <div class="status-success">
-            VRC frame generated successfully.
-        </div>
+        <div id="vrcDetectionStatus"></div>
     `;
 
-    getElement("vrcErrorOutput").innerHTML = `
-        <p>Select a bit position and flip it to test error detection.</p>
+    updateVRCResult();
+}
+
+
+// Display clickable VRC bits
+function renderVRCFrame() {
+
+    return `
+        <div class="bit-display vrc-bit-display">
+
+            ${vrcState.frame.split("").map((bit, index) => {
+
+                const changed =
+                    vrcState.changedPositions.includes(index);
+
+                const isParityBit =
+                    index === vrcState.frame.length - 1;
+
+                return `
+                    <button
+                        type="button"
+                        class="vrc-bit
+                            ${isParityBit ? "parity-bit" : ""}
+                            ${changed ? "error-bit" : ""}"
+                        onclick="toggleVRCBit(${index})">
+
+                        ${bit}
+
+                    </button>
+                `;
+
+            }).join("")}
+
+        </div>
     `;
 }
 
 
-function flipVRCBit() {
-    if (!vrcState.generated) {
-        showMessage(
-            "vrcErrorOutput",
-            "Please generate the VRC frame first.",
-            "error"
-        );
-        return;
-    }
+// Toggle selected bit and automatically toggle parity
+function toggleVRCBit(index) {
 
-    const position = Number(getElement("vrcTestBit").value);
-    const frame = vrcState.frame;
+    if (!vrcState.generated) return;
 
-    // Count only original data bits, excluding parity bit.
-    const dataLength = vrcState.originalData.length;
+    const parityIndex = vrcState.frame.length - 1;
 
-    if (
-        !Number.isInteger(position) ||
-        position < 1 ||
-        position > dataLength
-    ) {
-        showMessage(
-            "vrcErrorOutput",
-            `Enter a data bit position between 1 and ${dataLength}.`,
-            "error"
-        );
-        return;
-    }
+    // Toggle a bit and track its position
+    function flipBit(position) {
 
-    const index = position - 1;
+        const newBit =
+            vrcState.frame[position] === "0" ? "1" : "0";
 
-    const flippedBit = frame[index] === "0" ? "1" : "0";
+        vrcState.frame =
+            vrcState.frame.substring(0, position) +
+            newBit +
+            vrcState.frame.substring(position + 1);
 
-    const receivedFrame =
-        frame.substring(0, index) +
-        flippedBit +
-        frame.substring(index + 1);
+        const existingIndex =
+            vrcState.changedPositions.indexOf(position);
 
-    vrcState.frame = receivedFrame;
-
-    const ones = countOnes(receivedFrame);
-
-    const validParity = vrcState.parityType === "even"
-        ? ones % 2 === 0
-        : ones % 2 === 1;
-
-    getElement("vrcErrorOutput").innerHTML = `
-        <p class="output-title">VRC Error Detection Result</p>
-
-        <p><strong>Changed data bit position:</strong> ${position}</p>
-
-        <p><strong>Received frame:</strong></p>
-
-        ${renderBits(receivedFrame, receivedFrame.length - 1)}
-
-        ${
-            validParity
-                ? `<div class="status-success">
-                    No parity mismatch detected.
-                   </div>`
-                : `<div class="status-error">
-                    Error detected 
-                   </div>`
+        if (existingIndex >= 0) {
+            vrcState.changedPositions.splice(existingIndex, 1);
+        } else {
+            vrcState.changedPositions.push(position);
         }
-    `;
+    }
+
+    // Toggle selected bit
+    flipBit(index);
+
+    if (index === parityIndex) {
+
+        // Track manual parity-bit changes separately
+        vrcState.manualParityChanged =
+            !vrcState.manualParityChanged;
+
+    } else {
+
+        // Automatically toggle parity when a data bit changes
+        flipBit(parityIndex);
+    }
+
+    renderVRCOutput();
+}
+
+
+// Display VRC error detection result
+function updateVRCResult() {
+
+    const status = getElement("vrcDetectionStatus");
+
+    if (!status) return;
+
+    const parityIndex = vrcState.frame.length - 1;
+
+    // Count only independently changed data bits
+    const dataBitErrors =
+        vrcState.changedPositions.filter(
+            position => position !== parityIndex
+        ).length;
+
+    // Include independent manual parity-bit changes
+    const totalErrors =
+        dataBitErrors + (vrcState.manualParityChanged ? 1 : 0);
+
+    // Odd number of changes is detected
+    const errorDetected = totalErrors % 2 !== 0;
+
+    status.innerHTML = errorDetected
+        ? `<div class="status-error">Error detected!</div>`
+        : `<div class="status-success">No error detected!</div>`;
 }
 
 
@@ -242,11 +285,11 @@ function flipVRCBit() {
    ========================================= */
 
 let lrcState = {
-    rows: [],                 // Current data rows
-    originalRows: [],         // Original transmitted data rows
-    rowParity: [],            // Original row parity bits
-    columnParity: "",         // Original column parity bits
-    cornerParity: "",         // Original corner parity bit
+    rows: [],
+    originalRows: [],
+    rowParity: [],
+    columnParity: "",
+    cornerParity: "",
     changedPositions: [],
     generated: false
 };
@@ -260,6 +303,7 @@ function calculateRowParity(row) {
 
 // Calculate even parity for each column
 function calculateColumnParity(rows) {
+
     const numberOfColumns = rows[0].length;
     let result = "";
 
@@ -341,6 +385,7 @@ function checkLRCParity() {
 }
 
 
+// Display 2D parity matrix
 function renderLRCMatrix() {
 
     const rows = lrcState.rows;
@@ -408,7 +453,7 @@ function renderLRCMatrix() {
     }
 
     // Display recalculated column parity
-    html += `<tr><th>LRC</th>`;
+    html += `<tr><th>Column parity</th>`;
 
     for (let col = 0; col < numberOfColumns; col++) {
 
@@ -446,6 +491,7 @@ function renderLRCMatrix() {
 
     return html;
 }
+
 
 // Generate 2D LRC
 function generateLRC() {
