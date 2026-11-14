@@ -355,6 +355,54 @@ let lrcState = {
 };
 
 
+// Create the required number of binary input fields
+function createLRCInputs() {
+
+    const size = Number(getElement("lrcSize").value);
+    const container = getElement("lrcInputRows");
+
+    if (!container || size < 1 || size > 6) return;
+
+    // A new matrix size requires fresh input data and simulation
+    lrcState = {
+        rows: [],
+        originalRows: [],
+        rowParity: [],
+        columnParity: "",
+        cornerParity: "",
+        changedPositions: [],
+        generated: false
+    };
+
+    getElement("lrcOutput").innerHTML = `
+        <p>Your 2D parity matrix will appear here.</p>
+    `;
+
+    getElement("lrcErrorOutput").innerHTML = `
+        <p>Generate the LRC matrix to begin error detection.</p>
+    `;
+
+    let html = "";
+
+    for (let row = 1; row <= size; row++) {
+        html += `
+            <div class="form-group">
+                <label for="lrcRow${row}">Data Row ${row}</label>
+                <input
+                    type="text"
+                    id="lrcRow${row}"
+                    placeholder="Enter ${size}-bit data"
+                    maxlength="${size}"
+                    inputmode="numeric"
+                    autocomplete="off">
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
+
 // Calculate even parity for one row
 function calculateRowParity(row) {
     return String(countOnes(row) % 2);
@@ -408,7 +456,6 @@ function calculateCurrentLRCParity() {
 function checkLRCParity() {
 
     const numberOfColumns = lrcState.rows[0].length;
-
     const currentParity = calculateCurrentLRCParity();
 
     const failedRows = [];
@@ -450,7 +497,6 @@ function renderLRCMatrix() {
 
     const rows = lrcState.rows;
     const numberOfColumns = rows[0].length;
-
     const currentParity = calculateCurrentLRCParity();
 
     let html = `
@@ -556,41 +602,29 @@ function renderLRCMatrix() {
 // Generate 2D LRC
 function generateLRC() {
 
-    const rowIds = [
-        "lrcRow1",
-        "lrcRow2",
-        "lrcRow3",
-        "lrcRow4"
-    ];
+    const size = Number(getElement("lrcSize").value);
+    const rows = [];
 
-    const rows = rowIds.map(id =>
-        getElement(id).value.trim()
-    );
+    // Read exactly the selected number of rows
+    for (let row = 1; row <= size; row++) {
+        const input = getElement(`lrcRow${row}`);
+        rows.push(input ? input.value.trim() : "");
+    }
 
     if (rows.some(row => row === "")) {
         showMessage(
             "lrcOutput",
-            "Please enter data in all four rows.",
+            `Please enter binary data in all ${size} rows.`,
             "error"
         );
         return;
     }
 
-    if (rows.some(row => !isBinary(row) || row.length > 4)) {
+    // Each row must contain exactly 'size' bits
+    if (rows.some(row => !isBinary(row) || row.length !== size)) {
         showMessage(
             "lrcOutput",
-            "Invalid input. Enter 1 to 4 bits containing only 0s and 1s in each row.",
-            "error"
-        );
-        return;
-    }
-
-    const length = rows[0].length;
-
-    if (rows.some(row => row.length !== length)) {
-        showMessage(
-            "lrcOutput",
-            "All four data rows must have the same number of bits.",
+            `Invalid input. Enter exactly ${size} bits containing only 0s and 1s in each row.`,
             "error"
         );
         return;
@@ -620,7 +654,7 @@ function generateLRC() {
     };
 
     getElement("lrcOutput").innerHTML = `
-        <p class="output-title">2D LRC Generation Result</p>
+        <p class="output-title">${size} x ${size} LRC Parity Matrix</p>
 
         <p>
             Click any data bit in the matrix below to introduce
@@ -630,7 +664,7 @@ function generateLRC() {
         ${renderLRCMatrix()}
 
         <div class="status-success">
-            2D LRC generated successfully using even parity.
+            ${size} x ${size} LRC matrix generated successfully using even parity.
         </div>
     `;
 
@@ -648,7 +682,6 @@ function toggleLRCBit(row, col) {
     }
 
     const currentBit = lrcState.rows[row][col];
-
     const newBit = currentBit === "0" ? "1" : "0";
 
     // Change the selected data bit
@@ -671,7 +704,7 @@ function toggleLRCBit(row, col) {
 
     // Recalculate and display updated parity values
     getElement("lrcOutput").innerHTML = `
-        <p class="output-title">2D LRC Parity Matrix</p>
+        <p class="output-title">${lrcState.rows.length} x ${lrcState.rows[0].length} LRC Parity Matrix</p>
 
         <p>
             Click any data bit to introduce another error.
@@ -942,6 +975,7 @@ document.addEventListener("DOMContentLoaded", function () {
     showSection("aim");
 
     renderQuiz("quizContainer", quizQuestions, "quiz");
+    createLRCInputs();
     updateVRCParitySummary();
 
 });

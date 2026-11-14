@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -257,11 +258,12 @@
 
                 <ol>
                     <li>Open the LRC simulation tab.</li>
-                    <li>Enter binary data of equal length in each row (1 to 4 bits).</li>
+                    <li>Select the required matrix size from 1 × 1 to 6 × 6.</li>
+                    <li>Enter the required number of binary bits in each row.</li>
                     <li>Generate the column parity bits.</li>
-                    <li>Observe the generated LRC parity row.</li>
-                    <li>Optionally flip a data bit or parity bit.</li>
-                    <li>Observe whether the column parity check detects a mismatch.</li>
+                    <li>Observe the generated LRC parity matrix.</li>
+                    <li>Optionally flip a data bit to simulate a transmission error.</li>
+                    <li>Observe whether the row or column parity check detects a mismatch.</li>
                 </ol>
 
                 <h3>Part C: Assessment</h3>
@@ -353,48 +355,69 @@
                 <h3>Enter Data Rows</h3>
 
                 <p>
-                    Enter binary data in the four rows. All rows must
-                    contain the same number of bits.
+                    Select the number of rows required for the matrix.
+                    The same number of bits must be entered in each row.
                 </p>
 
+                <!-- Matrix Size Selection -->
                 <div class="form-group">
-                    <label for="lrcRow1">Data Row 1</label>
-                    <input type="text"
-                           id="lrcRow1"
-                           placeholder="Enter 4-bit data"
-                           maxlength="4"
-                           inputmode="numeric"
-                           autocomplete="off">
+
+                    <label for="lrcSize">Select Matrix Size</label>
+
+                    <select id="lrcSize" onchange="createLRCInputs()">
+                        <option value="1">1 × 1</option>
+                        <option value="2">2 × 2</option>
+                        <option value="3">3 × 3</option>
+                        <option value="4" selected>4 × 4</option>
+                        <option value="5">5 × 5</option>
+                        <option value="6">6 × 6</option>
+                    </select>
+
                 </div>
 
-                <div class="form-group">
-                    <label for="lrcRow2">Data Row 2</label>
-                    <input type="text"
-                           id="lrcRow2"
-                           placeholder="Enter 4-bit data"
-                           maxlength="4"
-                           inputmode="numeric"
-                           autocomplete="off">
-                </div>
+                <!-- Dynamic Row Inputs -->
+                <div id="lrcInputRows">
 
-                <div class="form-group">
-                    <label for="lrcRow3">Data Row 3</label>
-                    <input type="text"
-                           id="lrcRow3"
-                           placeholder="Enter 4-bit data"
-                           maxlength="4"
-                           inputmode="numeric"
-                           autocomplete="off">
-                </div>
+                    <div class="form-group">
+                        <label for="lrcRow1">Data Row 1</label>
+                        <input type="text"
+                               id="lrcRow1"
+                               placeholder="Enter 4-bit data"
+                               maxlength="4"
+                               inputmode="numeric"
+                               autocomplete="off">
+                    </div>
 
-                <div class="form-group">
-                    <label for="lrcRow4">Data Row 4</label>
-                    <input type="text"
-                           id="lrcRow4"
-                           placeholder="Enter 4-bit data"
-                           maxlength="4"
-                           inputmode="numeric"
-                           autocomplete="off">
+                    <div class="form-group">
+                        <label for="lrcRow2">Data Row 2</label>
+                        <input type="text"
+                               id="lrcRow2"
+                               placeholder="Enter 4-bit data"
+                               maxlength="4"
+                               inputmode="numeric"
+                               autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lrcRow3">Data Row 3</label>
+                        <input type="text"
+                               id="lrcRow3"
+                               placeholder="Enter 4-bit data"
+                               maxlength="4"
+                               inputmode="numeric"
+                               autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lrcRow4">Data Row 4</label>
+                        <input type="text"
+                               id="lrcRow4"
+                               placeholder="Enter 4-bit data"
+                               maxlength="4"
+                               inputmode="numeric"
+                               autocomplete="off">
+                    </div>
+
                 </div>
 
                 <button type="button"
