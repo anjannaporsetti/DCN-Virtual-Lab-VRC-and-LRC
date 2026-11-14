@@ -835,3 +835,251 @@ button:focus-visible {
 .vrc-bit.error-bit:hover {
     background: #ffcdd2;
 }
+
+/* =========================================
+   THEORY SECTION DIAGRAM STYLES
+   ========================================= */
+
+.theory-diagram {
+    margin: 25px 0;
+    padding: 24px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-align: center;
+    overflow-x: auto;
+}
+
+/* Basic block diagram */
+
+.block-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.diagram-box {
+    padding: 18px 14px;
+    background: #e0f2fe;
+    border: 2px solid #0284c7;
+    border-radius: 10px;
+    color: #0c4a6e;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    flex: 1 1 145px;
+    max-width: 220px;
+}
+
+.diagram-box small {
+    display: block;
+    margin-top: 7px;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.5;
+}
+
+.diagram-arrow {
+    color: #2563eb;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+/* Flowcharts */
+
+.flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.flow-node {
+    width: min(100%, 310px);
+    box-sizing: border-box;
+    padding: 14px 18px;
+    background: #e0f2fe;
+    border: 2px solid #0284c7;
+    border-radius: 8px;
+    color: #0c4a6e;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.flow-start {
+    background: #dbeafe;
+    border-color: #2563eb;
+    border-radius: 35px;
+    color: #1e40af;
+}
+
+.flow-decision {
+    width: 220px;
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 30px;
+    background: #fef3c7;
+    border: 2px solid #d97706;
+    border-radius: 10px;
+    color: #92400e;
+    clip-path: polygon(
+        50% 0%,
+        100% 50%,
+        50% 100%,
+        0% 50%
+    );
+}
+
+.flow-arrow {
+    font-size: 25px;
+    line-height: 1.5;
+    font-weight: bold;
+    color: #64748b;
+}
+
+.flow-branches {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 14px;
+}
+
+.flow-branch {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flow-branch .flow-node {
+    width: 100%;
+    max-width: 240px;
+}
+
+.branch-label {
+    color: #475569;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.flow-success {
+    background: #dcfce7;
+    border-color: #16a34a;
+    color: #166534;
+}
+
+.flow-error {
+    background: #fee2e2;
+    border-color: #dc2626;
+    color: #991b1b;
+}
+
+/* Diagram captions */
+
+.diagram-caption {
+    margin-top: 20px;
+    margin-bottom: 0;
+    font-size: 13px;
+    font-style: italic;
+    color: #64748b;
+    text-align: center;
+}
+
+/* VRC example */
+
+.theory-example {
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 18px 0;
+}
+
+.theory-example p {
+    margin: 8px 0;
+    overflow-wrap: anywhere;
+}
+
+/* LRC parity matrix */
+
+.theory-matrix {
+    width: auto;
+    min-width: 360px;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+.theory-matrix th,
+.theory-matrix td {
+    padding: 12px 16px;
+    text-align: center;
+    border: 1px solid #cbd5e1;
+}
+
+.theory-matrix th {
+    background: #dbeafe;
+    color: #1e3a8a;
+}
+
+.theory-parity,
+.theory-parity-row td {
+    background: #fef3c7;
+    font-weight: bold;
+    color: #92400e;
+}
+
+/* Mobile responsive layout */
+
+@media (max-width: 600px) {
+    .theory-diagram {
+        padding: 18px 10px;
+    }
+
+    .block-diagram {
+        flex-direction: column;
+    }
+
+    .diagram-box {
+        flex: none;
+        width: min(100%, 260px);
+        max-width: 260px;
+    }
+
+    .diagram-arrow {
+        transform: rotate(90deg);
+    }
+
+    .flow-node {
+        font-size: 12px;
+        padding: 12px;
+    }
+
+    .flow-decision {
+        width: 190px;
+        min-height: 100px;
+    }
+
+    .flow-branches {
+        gap: 10px;
+    }
+
+    .flow-branch .flow-node {
+        font-size: 11px;
+        padding: 10px 6px;
+    }
+
+    .theory-matrix th,
+    .theory-matrix td {
+        padding: 9px;
+        font-size: 12px;
+    }
+}
