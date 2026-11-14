@@ -1,6 +1,6 @@
 /* =========================================
    DCN VIRTUAL LAB - SCRIPT.JS
-   Tabs + VRC + 2D LRC + Quizzes
+   Tabs + VRC + 2D LRC + Quiz
    ========================================= */
 
 
@@ -93,6 +93,7 @@ let vrcState = {
     originalFrame: "",
     frame: "",
     parityType: "even",
+    initialParityBit: "",
     changedPositions: [],
     manualParityChanged: false,
     generated: false
@@ -108,16 +109,17 @@ function generateVRC() {
     if (!data) {
         showMessage(
             "vrcOutput",
-            "Please enter a binary data sequence.",
+            "Please enter binary data.",
             "error"
         );
         return;
     }
 
-    if (!isBinary(data)) {
+    // Accept 1 to 8 bits
+    if (!isBinary(data) || data.length > 8) {
         showMessage(
             "vrcOutput",
-            "Enter only 0s and 1s.",
+            "Invalid input. Enter 1 to 8 bits containing only 0s and 1s.",
             "error"
         );
         return;
@@ -139,12 +141,14 @@ function generateVRC() {
         originalFrame: frame,
         frame: frame,
         parityType: parityType,
+        initialParityBit: parityBit,
         changedPositions: [],
         manualParityChanged: false,
         generated: true
     };
 
     renderVRCOutput();
+    updateVRCParitySummary();
 }
 
 
@@ -249,6 +253,7 @@ function toggleVRCBit(index) {
     }
 
     renderVRCOutput();
+    updateVRCParitySummary();
 }
 
 
@@ -261,22 +266,77 @@ function updateVRCResult() {
 
     const parityIndex = vrcState.frame.length - 1;
 
-    // Count only independently changed data bits
     const dataBitErrors =
         vrcState.changedPositions.filter(
             position => position !== parityIndex
         ).length;
 
-    // Include independent manual parity-bit changes
     const totalErrors =
         dataBitErrors + (vrcState.manualParityChanged ? 1 : 0);
 
-    // Odd number of changes is detected
     const errorDetected = totalErrors % 2 !== 0;
 
-    status.innerHTML = errorDetected
-        ? `<div class="status-error">Error detected!</div>`
-        : `<div class="status-success">No error detected!</div>`;
+    const receivedParity = vrcState.frame.slice(-1);
+
+    status.innerHTML = `
+        <div class="${errorDetected ? "status-error" : "status-success"}">
+
+            <strong>
+                ${errorDetected ? "Error detected!" : "No error detected!"}
+            </strong>
+
+            <p>
+                <strong>Transmitted parity:</strong>
+                ${vrcState.initialParityBit}
+
+                <br>
+
+                <strong>Received parity:</strong>
+                ${receivedParity}
+            </p>
+
+            ${
+                errorDetected
+                    ? `<p>
+                        Error detected because the received parity
+                        does not match with Transmitted parity.
+                       </p>`
+                    : ""
+            }
+
+        </div>
+    `;
+}
+
+
+// Display the initially generated and current parity bits on Result page
+function updateVRCParitySummary() {
+
+    const summary = getElement("vrcParitySummary");
+    if (!summary) return;
+
+    if (!vrcState.generated) {
+        summary.innerHTML = `
+            <p>Generate the VRC frame to view parity details.</p>
+        `;
+        return;
+    }
+
+    const currentParityBit = vrcState.frame.slice(-1);
+
+    summary.innerHTML = `
+        <p><strong>Parity Type:</strong>
+            ${vrcState.parityType === "even" ? "Even Parity" : "Odd Parity"}
+        </p>
+
+        <p><strong>Initially Generated Parity Bit:</strong>
+            ${vrcState.initialParityBit}
+        </p>
+
+        <p><strong>Current Parity Bit:</strong>
+            ${currentParityBit}
+        </p>
+    `;
 }
 
 
@@ -516,10 +576,10 @@ function generateLRC() {
         return;
     }
 
-    if (rows.some(row => !isBinary(row))) {
+    if (rows.some(row => !isBinary(row) || row.length > 4)) {
         showMessage(
             "lrcOutput",
-            "Invalid input. Enter only 0s and 1s.",
+            "Invalid input. Enter 1 to 4 bits containing only 0s and 1s in each row.",
             "error"
         );
         return;
@@ -645,56 +705,13 @@ function displayLRCErrorResult() {
         };
     });
 
-    // Store positions belonging to rectangular patterns
-    const rectanglePositions = new Set();
+    // Get actual row and column parity mismatches
+    const parityCheck = checkLRCParity();
 
-    // Find every 2 x 2 rectangle among the changed bits
-    for (let i = 0; i < positions.length; i++) {
+    const failedRows = parityCheck.failedRows;
+    const failedColumns = parityCheck.failedColumns;
 
-        for (let j = i + 1; j < positions.length; j++) {
-
-            const row1 = positions[i].row;
-            const row2 = positions[j].row;
-
-            if (row1 === row2) continue;
-
-            for (let k = 0; k < positions.length; k++) {
-
-                for (let l = k + 1; l < positions.length; l++) {
-
-                    const col1 = positions[k].col;
-                    const col2 = positions[l].col;
-
-                    if (col1 === col2) continue;
-
-                    // Check whether all four rectangle corners exist
-                    const rectangle = [
-                        `R${row1}C${col1}`,
-                        `R${row1}C${col2}`,
-                        `R${row2}C${col1}`,
-                        `R${row2}C${col2}`
-                    ];
-
-                    const allFourPresent = rectangle.every(pos =>
-                        positions.some(p => p.name === pos)
-                    );
-
-                    if (allFourPresent) {
-                        rectangle.forEach(pos =>
-                            rectanglePositions.add(pos)
-                        );
-                    }
-                }
-            }
-        }
-    }
-
-    // Exclude rectangle positions
-    const remainingPositions = positions.filter(p =>
-        !rectanglePositions.has(p.name)
-    );
-
-    // No changed bits
+    // No bits have been changed
     if (positions.length === 0) {
 
         output.innerHTML = `
@@ -703,100 +720,64 @@ function displayLRCErrorResult() {
                 <p>All parity values match the original generated parity.</p>
             </div>
         `;
+
+        return;
     }
 
-    // All changed bits belong to a rectangle
-    else if (remainingPositions.length === 0) {
+    // No row or column parity mismatch
+    if (failedRows.length === 0 && failedColumns.length === 0) {
 
         output.innerHTML = `
             <div class="error-result">
                 <h3>Undetected error pattern!</h3>
+
                 <p>
-                   For this pattern error cannot be detected
+                    The changed bits do not produce any row or column
+                    parity mismatch.
                 </p>
             </div>
         `;
+
+        return;
     }
 
-    // Display only positions outside rectangular patterns
-    else {
+    // Prepare the actual mismatch locations
+    const mismatchLocations = [];
 
-        output.innerHTML = `
-            <div class="error-result">
-                <h3>Error detected!</h3>
-                <p>
-                    <strong>Error detected in:</strong>
-                    ${remainingPositions.map(p => p.name).join(", ")}
-                </p>
-            </div>
-        `;
-    }
+    failedRows.forEach(row => {
+        mismatchLocations.push(`Row ${row}`);
+    });
+
+    failedColumns.forEach(col => {
+        mismatchLocations.push(`Column ${col}`);
+    });
+
+    // Display detected positions and actual parity mismatches
+    output.innerHTML = `
+        <div class="error-result">
+
+            <h3>Error detected!</h3>
+
+            <p>
+                <strong>Error detected in:</strong>
+                ${positions.map(p => p.name).join(", ")}
+            </p>
+
+            <p>
+                The error is detected because parity mismatch
+                occurs in ${mismatchLocations.join(" and ")}.
+            </p>
+
+        </div>
+    `;
 }
 
 
 /* =========================================
-   6. PRE-TEST QUESTIONS
+   5. QUIZ QUESTIONS
    ========================================= */
 
-const preQuestions = [
-    {
-        question: "1. What is the main purpose of error detection?",
-        options: [
-            "To increase the size of a monitor",
-            "To identify possible errors in received data",
-            "To reduce the number of computers",
-            "To convert all data into decimal"
-        ],
-        answer: 1
-    },
-    {
-        question: "2. What does VRC stand for?",
-        options: [
-            "Vertical Redundancy Check",
-            "Variable Routing Code",
-            "Virtual Receiver Control",
-            "Verified Random Check"
-        ],
-        answer: 0
-    },
-    {
-        question: "3. In even parity, the total number of 1s should be:",
-        options: [
-            "Always odd",
-            "Always zero",
-            "Even",
-            "Always one"
-        ],
-        answer: 2
-    },
-    {
-        question: "4. Which technique checks parity across columns?",
-        options: [
-            "Routing",
-            "LRC",
-            "Encryption",
-            "Compression"
-        ],
-        answer: 1
-    },
-    {
-        question: "5. What is a parity bit?",
-        options: [
-            "A bit added for error detection",
-            "A bit that always equals zero",
-            "A bit that removes all errors",
-            "A bit used only for addressing"
-        ],
-        answer: 0
-    }
-];
-
-
-/* =========================================
-   7. POST-TEST QUESTIONS
-   ========================================= */
-
-const postQuestions = [
+const quizQuestions = [
     {
         question: "1. A data sequence contains three 1s. What is its even parity bit?",
         options: [
@@ -851,7 +832,7 @@ const postQuestions = [
 
 
 /* =========================================
-   8. QUIZ GENERATION
+   6. QUIZ GENERATION
    ========================================= */
 
 function renderQuiz(containerId, questions, prefix) {
@@ -888,22 +869,14 @@ function renderQuiz(containerId, questions, prefix) {
 
 
 /* =========================================
-   9. QUIZ EVALUATION
+   7. QUIZ EVALUATION
    ========================================= */
 
-function gradeQuiz(type) {
+function gradeQuiz() {
 
-    const isPreTest = type === "pre";
-
-    const questions = isPreTest
-        ? preQuestions
-        : postQuestions;
-
-    const prefix = isPreTest ? "pre" : "post";
-
-    const resultId = isPreTest
-        ? "preQuizResult"
-        : "postQuizResult";
+    const questions = quizQuestions;
+    const prefix = "quiz";
+    const resultId = "quizResult";
 
     let score = 0;
     let unanswered = 0;
@@ -933,7 +906,7 @@ function gradeQuiz(type) {
             percentage >= 60 ? "status-success" : "status-info"
         }">
 
-            <p><strong>${isPreTest ? "Pre-Test" : "Post-Test"} Result</strong></p>
+            <p><strong>Quiz Result</strong></p>
 
             <p>Score: ${score} / ${questions.length}</p>
 
@@ -961,15 +934,14 @@ function gradeQuiz(type) {
 
 
 /* =========================================
-   10. INITIALIZE WEBSITE
+   8. INITIALIZE WEBSITE
    ========================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
 
     showSection("aim");
 
-    renderQuiz("preQuiz", preQuestions, "pre");
-
-    renderQuiz("postQuiz", postQuestions, "post");
+    renderQuiz("quizContainer", quizQuestions, "quiz");
+    updateVRCParitySummary();
 
 });
